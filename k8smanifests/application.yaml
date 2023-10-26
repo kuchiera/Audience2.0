@@ -1,0 +1,16 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: my-spark-app
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'ssh://anile@gerrit.sumtotalsystems.com:29418/Audience2.0-ms'
+    path: k8smanifests/dev/spark-job.yaml
+    targetRevision: develop
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: tenant1
+  syncPolicy:
+    automated: {}
