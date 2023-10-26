@@ -18,7 +18,7 @@ spec:
             command: ["/bin/bash", "-c"]
             args:
               - >
-                spark-submit
+                /opt/spark/bin/spark-submit
                 --master k8s://https://192.168.22.235:6443
                 --deploy-mode cluster
                 --name my-spark-app-tenant1
