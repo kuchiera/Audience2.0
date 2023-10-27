@@ -270,6 +270,9 @@ roleRef:
   kind: ClusterRole
   name: spark-operator
   apiGroup: rbac.authorization.k8s.io
+
+---
+
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -278,11 +281,17 @@ metadata:
 data:
   spark-defaults.conf: |
     spark.kubernetes.container.image=eragani/spark:3.3.1
+
+---
+
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: spark
   namespace: tenant1
+
+---
+
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
@@ -292,6 +301,9 @@ rules:
 - apiGroups: [""]
   resources: ["pods", "services", "configmaps"]
   verbs: ["get", "watch", "list", "create", "delete"]
+
+---
+
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
@@ -305,6 +317,9 @@ subjects:
 - kind: ServiceAccount
   name: spark
   namespace: tenant1
+
+---
+
 apiVersion: v1
 kind: Secret
 metadata:
@@ -313,6 +328,9 @@ metadata:
 data:
   .dockerconfigjson: eyJhdXRocyI6eyJkb2NrZXIuaW8iOnsidXNlcm5hbWUiOiJlcmFnYW5pIiwicGFzc3dvcmQiOiJBbnVyYWRoYUAxMjM0IyQiLCJlbWFpbCI6ImVyYWdhbmlAZ21haWwuY29tIiwiYXV0aCI6IlpYSmhaMkZ1YVRwQmJuVnlZV1JvWVVBeE1qTTBJeVE9In19fQ==
 type: kubernetes.io/dockerconfigjson
+
+---
+
 apiVersion: "sparkoperator.k8s.io/v1beta2"
 kind: ScheduledSparkApplication
 metadata:
