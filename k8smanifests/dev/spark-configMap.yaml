@@ -1,8 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: spark-conf
-  namespace: tenant1
-data:
-  spark-defaults.conf: |
-    spark.kubernetes.container.image=eragani/spark:3.3.1
