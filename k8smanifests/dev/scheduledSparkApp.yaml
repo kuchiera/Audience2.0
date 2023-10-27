@@ -29,7 +29,7 @@ spec:
       labels:
         version: 3.3.1
     sparkConf:
-      #"spark.kubernetes.namespace": "tenant1"
+      "spark.kubernetes.namespace": "tenant1"
       "spark.kubernetes.authenticate.driver.serviceAccountName": "spark"
       "spark.kubernetes.container.image": "eragani/spark:3.3.1"
       "spark.kubernetes.driver.container.image": "eragani/spark:3.3.1"
