@@ -2,7 +2,7 @@ apiVersion: "sparkoperator.k8s.io/v1beta2"
 kind: ScheduledSparkApplication
 metadata:
   name: my-spark-app-tenant1
-  namespace: default
+  namespace: tenant1
 spec:
   schedule: "*/3 * * * *"
   concurrencyPolicy: Forbid
