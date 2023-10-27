@@ -317,6 +317,9 @@ subjects:
 - kind: ServiceAccount
   name: spark
   namespace: tenant1
+- kind: ServiceAccount
+  name: argocd-application-controller  
+  namespace: argocd
 
 ---
 
