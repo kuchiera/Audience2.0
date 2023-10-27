@@ -323,6 +323,32 @@ subjects:
 
 ---
 
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: argocd-cluster-role
+rules:
+- apiGroups: [""]
+  resources: ["pods", "services", "configmaps"]
+  verbs: ["get", "watch", "list", "create", "delete"]
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: argocd-cluster-role-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: argocd-cluster-role
+subjects:
+- kind: ServiceAccount
+  name: argocd-application-controller
+  namespace: argocd
+
+---
+
 apiVersion: v1
 kind: Secret
 metadata:
