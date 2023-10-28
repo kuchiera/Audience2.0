@@ -284,32 +284,39 @@ data:
     spark.kubernetes.container.image=eragani/spark:3.3.1
 
 ---
-
+---
+# ServiceAccount for spark in tenant1 namespace
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: spark
   namespace: tenant1
+  labels:
+    app: spark
 
 ---
-
+# Role defining permissions for spark in tenant1 namespace
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: spark-role
   namespace: tenant1
+  labels:
+    app: spark
 rules:
 - apiGroups: [""]
   resources: ["pods", "services", "configmaps"]
   verbs: ["get", "watch", "list", "create", "delete"]
 
 ---
-
+# RoleBinding for spark and Argo CD application controller in tenant1 namespace
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: spark-role-binding
   namespace: tenant1
+  labels:
+    app: spark
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
@@ -323,22 +330,26 @@ subjects:
   namespace: argocd
 
 ---
-
+# ClusterRole defining permissions for Argo CD across the cluster
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: argocd-cluster-role
+  labels:
+    app: argocd
 rules:
 - apiGroups: [""]
   resources: ["pods", "services", "configmaps"]
   verbs: ["get", "watch", "list", "create", "delete"]
 
 ---
-
+# ClusterRoleBinding granting Argo CD the defined ClusterRole permissions
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: argocd-cluster-role-binding
+  labels:
+    app: argocd
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
