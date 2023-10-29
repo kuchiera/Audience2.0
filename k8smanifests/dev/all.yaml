@@ -48,10 +48,10 @@ roleRef:
   apiGroup: rbac.authorization.k8s.io
 
 ---
-apiVersion: "sparkoperator.k8s.io/v1beta2"
+apiVersion: sparkoperator.k8s.io/v1beta2
 kind: ScheduledSparkApplication
 metadata:
-  name: my-spark-app-tenant1
+  name: scheduled-spark-app
   namespace: tenant1
 spec:
   schedule: "*/3 * * * *"
@@ -86,5 +86,6 @@ spec:
       "spark.kubernetes.executor.container.image": "eragani/spark:3.3.1"
       "spark.eventLog.enabled": "false"
       "spark.kubernetes.container.image.pullSecrets": "docker-secret"
-    # arguments:
-    #   - "au03_sales_test"
+    arguments:
+      - "au03_sales_test"
+
