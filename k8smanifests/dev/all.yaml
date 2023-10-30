@@ -54,7 +54,7 @@ metadata:
   name: scheduled-spark-app
   namespace: au05-sales-test
 spec:
-  schedule: "*/3 * * * *"
+  schedule: "*/1 * * * *"
   concurrencyPolicy: Forbid
   template:
     type: Scala
