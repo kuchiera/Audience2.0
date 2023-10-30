@@ -87,6 +87,6 @@ spec:
       "spark.kubernetes.executor.container.image": "eragani/spark:3.3.1"
       "spark.eventLog.enabled": "false"
       "spark.kubernetes.container.image.pullSecrets": "docker-secret"
-    arguments:
-      - "au05_sales_test"
+    # arguments:
+    #   - "au05_sales_test"
 
