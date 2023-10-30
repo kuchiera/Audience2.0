@@ -43,7 +43,7 @@ subjects:
   name: spark
   namespace: au05-sales-test
 - kind: ServiceAccount
-  name: argocd-application-controller
+  name: argocd-spark
   namespace: argocd
 roleRef:
   kind: Role
@@ -74,7 +74,7 @@ spec:
       memory: "512m"
       labels:
         version: 3.3.1
-      serviceAccount: argocd-application-controller
+      serviceAccount: argocd-spark
     executor:
       cores: 1
       instances: 5
@@ -83,7 +83,7 @@ spec:
         version: 3.3.1
     sparkConf:
       "spark.kubernetes.namespace": "au05-sales-test"
-      "spark.kubernetes.authenticate.driver.serviceAccountName": "argocd-application-controller"
+      "spark.kubernetes.authenticate.driver.serviceAccountName": "argocd-spark"
       "spark.kubernetes.container.image": "eragani/spark:3.3.1"
       "spark.kubernetes.driver.container.image": "eragani/spark:3.3.1"
       "spark.kubernetes.executor.container.image": "eragani/spark:3.3.1"
