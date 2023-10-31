@@ -55,7 +55,7 @@ metadata:
   name: UserCDCEventProcessor
   namespace: au05-sales-test
 spec:
-  schedule: "*/3 * * * *"
+  schedule: "*/2 * * * *"
   concurrencyPolicy: Forbid
   template:
     type: Scala
