@@ -49,6 +49,20 @@ roleRef:
   apiGroup: rbac.authorization.k8s.io
 
 ---
+
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: spark-resource-quota
+  namespace: au05-sales-test
+spec:
+  hard:
+    requests.cpu: "2"  # total amount of CPU that can be requested
+    requests.memory: "1Gi"  # total amount of memory that can be requested
+    limits.cpu: "4"  # total amount of CPU that can be limited
+    limits.memory: "1Gi"  # total amount of memory that can be limited
+    
+---
 apiVersion: sparkoperator.k8s.io/v1beta2
 kind: ScheduledSparkApplication
 metadata:
@@ -119,7 +133,7 @@ spec:
     executor:
       cores: 1
       instances: 2
-      memory: "512m"
+      memory: "1Gi"
       labels:
         version: 3.3.1
       #serviceAccount: spark
