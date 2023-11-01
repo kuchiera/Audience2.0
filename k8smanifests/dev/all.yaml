@@ -57,10 +57,10 @@ metadata:
   namespace: au05-sales-test
 spec:
   hard:
-    requests.cpu: "3"  # total amount of CPU that can be requested
-    requests.memory: "2Gi"  # total amount of memory that can be requested
-    limits.cpu: "4"  # total amount of CPU that can be limited
-    limits.memory: "2Gi"  # total amount of memory that can be limited
+    requests.cpu: "3"  # 3 cores in total
+    requests.memory: "3Gi"  # 3Gi memory in total
+    limits.cpu: "3"  # 3 cores in total
+    limits.memory: "3Gi"  # 3Gi memory in total
     
 ---
 apiVersion: sparkoperator.k8s.io/v1beta2
@@ -82,18 +82,20 @@ spec:
       type: Never
     driver:
       cores: 1
-      coreLimit: "1200m"
-      memory: "512m"
+      coreLimit: "1"
+      memory: "1Gi"
+      memoryOverhead: "1Gi"
       labels:
         version: 3.3.1
       serviceAccount: spark
     executor:
       cores: 1
+      coreLimit: "1"
       instances: 2
-      memory: "512m"
+      memory: "1Gi"
+      memoryOverhead: "1Gi"
       labels:
         version: 3.3.1
-      #serviceAccount: spark
     sparkConf:
       "spark.kubernetes.namespace": "au05-sales-test"
       "spark.kubernetes.authenticate.driver.serviceAccountName": "spark"
@@ -125,18 +127,20 @@ spec:
       type: Never
     driver:
       cores: 1
-      coreLimit: "1200m"
-      memory: "512m"
+      coreLimit: "1"
+      memory: "1Gi"
+      memoryOverhead: "1Gi"
       labels:
         version: 3.3.1
       serviceAccount: spark
     executor:
       cores: 1
+      coreLimit: "1"
       instances: 2
-      memory: "512m"
+      memory: "1Gi"
+      memoryOverhead: "1Gi"
       labels:
         version: 3.3.1
-      #serviceAccount: spark
     sparkConf:
       "spark.kubernetes.namespace": "au05-sales-test"
       "spark.kubernetes.authenticate.driver.serviceAccountName": "spark"
