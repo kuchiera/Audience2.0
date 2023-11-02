@@ -173,16 +173,16 @@ spec:
               driver:
                 cores: 1
                 coreLimit: "1"
-                memory: "1Gi"
-                memoryOverhead: "1Gi"
+                memory: "512m"
+                memoryOverhead: "512m"
                 labels:
                   version: 3.3.1
                 serviceAccount: spark
               executor:
                 cores: 1
-                instances: 2
-                memory: "1Gi"
-                memoryOverhead: "1Gi"
+                instances: 1
+                memory: "512m"
+                memoryOverhead: "512m"
                 labels:
                   version: 3.3.1
               sparkConf:
