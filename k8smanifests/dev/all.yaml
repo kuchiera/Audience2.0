@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: spark-conf
-  namespace: au03-sales-test
+  namespace: au05-sales-test
 data:
   spark-defaults.conf: |
     spark.kubernetes.container.image=eragani/spark:3.3.1
@@ -12,7 +12,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: docker-secret
-  namespace: au03-sales-test
+  namespace: au05-sales-test
 data:
   .dockerconfigjson: eyJhdXRocyI6eyJkb2NrZXIuaW8iOnsidXNlcm5hbWUiOiJlcmFnYW5pIiwicGFzc3dvcmQiOiJBbnVyYWRoYUAxMjM0IyQiLCJlbWFpbCI6ImVyYWdhbmlAZ21haWwuY29tIiwiYXV0aCI6IlpYSmhaMkZ1YVRwQmJuVnlZV1JvWVVBeE1qTTBJeVE9In19fQ==
 type: kubernetes.io/dockerconfigjson
@@ -21,12 +21,12 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: spark
-  namespace: au03-sales-test
+  namespace: au05-sales-test
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  namespace: au03-sales-test
+  namespace: au05-sales-test
   name: spark-role
 rules:
 - apiGroups: [""]
@@ -37,11 +37,11 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: spark-rolebinding
-  namespace: au03-sales-test
+  namespace: au05-sales-test
 subjects:
 - kind: ServiceAccount
   name: spark
-  namespace: au03-sales-test
+  namespace: au05-sales-test
 
 roleRef:
   kind: Role
@@ -53,7 +53,7 @@ apiVersion: sparkoperator.k8s.io/v1beta2
 kind: ScheduledSparkApplication
 metadata:
   name: user-cdc-event-proc-1
-  namespace: au03-sales-test
+  namespace: au05-sales-test
 spec:
   schedule: "*/2 * * * *"
   concurrencyPolicy: Forbid
@@ -81,7 +81,7 @@ spec:
         version: 3.3.1
       #serviceAccount: spark
     sparkConf:
-      "spark.kubernetes.namespace": "au03-sales-test"
+      "spark.kubernetes.namespace": "au05-sales-test"
       "spark.kubernetes.authenticate.driver.serviceAccountName": "spark"
       "spark.kubernetes.container.image": "eragani/spark:3.3.1"
       "spark.kubernetes.driver.container.image": "eragani/spark:3.3.1"
@@ -96,7 +96,7 @@ spec:
 # kind: ScheduledSparkApplication
 # metadata:
 #   name: user-cdc-event-proc-2
-#   namespace: au03-sales-test
+#   namespace: au05-sales-test
 # spec:
 #   schedule: "*/4 * * * *"
 #   concurrencyPolicy: Forbid
@@ -124,7 +124,7 @@ spec:
 #         version: 3.3.1
 #       #serviceAccount: spark
 #     sparkConf:
-#       "spark.kubernetes.namespace": "au03-sales-test"
+#       "spark.kubernetes.namespace": "au05-sales-test"
 #       "spark.kubernetes.authenticate.driver.serviceAccountName": "spark"
 #       "spark.kubernetes.container.image": "eragani/spark:3.3.1"
 #       "spark.kubernetes.driver.container.image": "eragani/spark:3.3.1"
