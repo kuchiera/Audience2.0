@@ -13,4 +13,6 @@ spec:
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: au03-sales-test
-  syncPolicy: {}
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
