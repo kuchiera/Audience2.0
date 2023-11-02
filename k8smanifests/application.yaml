@@ -12,5 +12,5 @@ spec:
     targetRevision: HEAD
   destination:
     server: 'https://kubernetes.default.svc'
-    namespace: au05-sales-test
+    namespace: au03-sales-test
   syncPolicy: {}
