@@ -4,6 +4,7 @@ metadata:
   name: spark-conf
   namespace: au05-sales-test
 data:
+  workflow: "1"  # Only allow 1 workflow to run at a time
   spark-defaults.conf: |
     spark.kubernetes.container.image=eragani/spark:3.3.1
 
@@ -138,15 +139,6 @@ roleRef:
 #       - "au03_sales_test"
 
 ---
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: workflow-semaphore
-  namespace: au05-sales-test
-data:
-  workflow: "1"  # Only allow 1 workflow to run at a time
-
----
 
 apiVersion: argoproj.io/v1alpha1
 kind: CronWorkflow
@@ -159,7 +151,7 @@ spec:
   synchronization:
     semaphore:
       configMapKeyRef:
-        name: workflow-semaphore
+        name: spark-conf
         key: workflow
   startingDeadlineSeconds: 0
   workflowSpec:
@@ -220,7 +212,7 @@ spec:
   synchronization:
     semaphore:
       configMapKeyRef:
-        name: workflow-semaphore
+        name: spark-conf
         key: workflow
   startingDeadlineSeconds: 0
   workflowSpec:
