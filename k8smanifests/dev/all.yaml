@@ -138,6 +138,15 @@ roleRef:
 #       - "au03_sales_test"
 
 ---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: workflow-semaphore
+  namespace: au05-sales-test
+data:
+  workflow: "1"  # Only allow 1 workflow to run at a time
+
+---
 
 apiVersion: argoproj.io/v1alpha1
 kind: CronWorkflow
@@ -260,11 +269,4 @@ spec:
                 "spark.kubernetes.container.image.pullSecrets": "docker-secret"
               arguments:
                 - "au03_sales_test"
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: workflow-semaphore
-  namespace: au05-sales-test
-data:
-  workflow: "1"  # Only allow 1 workflow to run at a time
+
