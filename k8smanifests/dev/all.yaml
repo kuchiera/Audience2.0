@@ -92,44 +92,115 @@ spec:
       - "au05_sales_test"
 
 ---
-apiVersion: sparkoperator.k8s.io/v1beta2
-kind: ScheduledSparkApplication
+# apiVersion: sparkoperator.k8s.io/v1beta2
+# kind: ScheduledSparkApplication
+# metadata:
+#   name: user-cdc-event-proc-2
+#   namespace: au03-sales-test
+# spec:
+#   schedule: "*/4 * * * *"
+#   concurrencyPolicy: Forbid
+#   template:
+#     type: Scala
+#     mode: cluster
+#     image: "eragani/spark:3.3.1"
+#     mainClass: "step1.UserCDCEventProcessor"
+#     mainApplicationFile: "local:///opt/suite/audience2.0/Audience-assembly-0.1.0.jar"
+#     sparkVersion: "3.3.1"
+#     restartPolicy:
+#       type: Never
+#     driver:
+#       cores: 1
+#       coreLimit: "1200m"
+#       memory: "512m"
+#       labels:
+#         version: 3.3.1
+#       serviceAccount: spark
+#     executor:
+#       cores: 1
+#       instances: 2
+#       memory: "512m"
+#       labels:
+#         version: 3.3.1
+#       #serviceAccount: spark
+#     sparkConf:
+#       "spark.kubernetes.namespace": "au03-sales-test"
+#       "spark.kubernetes.authenticate.driver.serviceAccountName": "spark"
+#       "spark.kubernetes.container.image": "eragani/spark:3.3.1"
+#       "spark.kubernetes.driver.container.image": "eragani/spark:3.3.1"
+#       "spark.kubernetes.executor.container.image": "eragani/spark:3.3.1"
+#       "spark.eventLog.enabled": "false"
+#       "spark.kubernetes.container.image.pullSecrets": "docker-secret"
+#     arguments:
+#       - "au03_sales_test"
+
+---
+
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
 metadata:
-  name: user-cdc-event-proc-2
-  namespace: au03-sales-test
+  name: user-cdc-event-proc-1
+  namespace: au05-sales-test
 spec:
-  schedule: "*/4 * * * *"
+  entrypoint: submit-spark-job
+  schedule: "*/2 * * * *"
   concurrencyPolicy: Forbid
-  template:
-    type: Scala
-    mode: cluster
-    image: "eragani/spark:3.3.1"
-    mainClass: "step1.UserCDCEventProcessor"
-    mainApplicationFile: "local:///opt/suite/audience2.0/Audience-assembly-0.1.0.jar"
-    sparkVersion: "3.3.1"
-    restartPolicy:
-      type: Never
-    driver:
-      cores: 1
-      coreLimit: "1200m"
-      memory: "512m"
-      labels:
-        version: 3.3.1
-      serviceAccount: spark
-    executor:
-      cores: 1
-      instances: 2
-      memory: "512m"
-      labels:
-        version: 3.3.1
-      #serviceAccount: spark
-    sparkConf:
-      "spark.kubernetes.namespace": "au03-sales-test"
-      "spark.kubernetes.authenticate.driver.serviceAccountName": "spark"
-      "spark.kubernetes.container.image": "eragani/spark:3.3.1"
-      "spark.kubernetes.driver.container.image": "eragani/spark:3.3.1"
-      "spark.kubernetes.executor.container.image": "eragani/spark:3.3.1"
-      "spark.eventLog.enabled": "false"
-      "spark.kubernetes.container.image.pullSecrets": "docker-secret"
-    arguments:
-      - "au03_sales_test"
+  synchronization:
+    semaphore:
+      configMapKeyRef:
+        name: workflow-semaphore
+        key: workflow
+  templates:
+  - name: submit-spark-job
+    resource:
+      action: create
+      manifest: |
+        apiVersion: sparkoperator.k8s.io/v1beta2
+        kind: SparkApplication
+        metadata:
+          name: user-cdc-event-proc-1
+          namespace: au05-sales-test
+        spec:
+          type: Scala
+          mode: cluster
+          image: "eragani/spark:3.3.1"
+          mainClass: "step1.UserCDCEventProcessor"
+          mainApplicationFile: "local:///opt/suite/audience2.0/Audience-assembly-0.1.0.jar"
+          sparkVersion: "3.3.1"
+          restartPolicy:
+            type: Never
+          driver:
+            cores: 1
+            coreLimit: "1"
+            memory: "1Gi"
+            memoryOverhead: "1Gi"
+            labels:
+              version: 3.3.1
+            serviceAccount: spark
+          executor:
+            cores: 1
+            coreLimit: "1"
+            instances: 2
+            memory: "1Gi"
+            memoryOverhead: "1Gi"
+            labels:
+              version: 3.3.1
+          sparkConf:
+            "spark.kubernetes.namespace": "au05-sales-test"
+            "spark.kubernetes.authenticate.driver.serviceAccountName": "spark"
+            "spark.kubernetes.container.image": "eragani/spark:3.3.1"
+            "spark.kubernetes.driver.container.image": "eragani/spark:3.3.1"
+            "spark.kubernetes.executor.container.image": "eragani/spark:3.3.1"
+            "spark.eventLog.enabled": "false"
+            "spark.kubernetes.container.image.pullSecrets": "docker-secret"
+          arguments:
+            - "au05_sales_test"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: workflow-semaphore
+  namespace: au05-sales-test
+data:
+  workflow: "1"  # Only allow 1 workflow to run at a time
+
