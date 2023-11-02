@@ -147,6 +147,11 @@ metadata:
 spec:
   schedule: "*/2 * * * *"
   concurrencyPolicy: Forbid
+  synchronization:
+    semaphore:
+      configMapKeyRef:
+        name: workflow-semaphore
+        key: workflow
   startingDeadlineSeconds: 0
   workflowSpec:
     entrypoint: submit-spark-job
@@ -202,6 +207,11 @@ metadata:
 spec:
   schedule: "*/4 * * * *"
   concurrencyPolicy: Forbid
+  synchronization:
+    semaphore:
+      configMapKeyRef:
+        name: workflow-semaphore
+        key: workflow
   startingDeadlineSeconds: 0
   workflowSpec:
     entrypoint: submit-spark-job
