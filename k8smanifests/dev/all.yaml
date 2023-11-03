@@ -139,6 +139,124 @@ roleRef:
 
 ---
 
+# apiVersion: argoproj.io/v1alpha1
+# kind: CronWorkflow
+# metadata:
+#   name: user-cdc-event-proc-1
+#   namespace: au05-sales-test
+# spec:
+#   schedule: "*/2 * * * *"
+#   concurrencyPolicy: Forbid
+#   startingDeadlineSeconds: 0
+#   workflowSpec:
+#     entrypoint: submit-spark-job-1
+#     synchronization:  # Defining the synchronization policy here
+#       mutex:
+#         name: my-mutex
+#     priorityClassName: high-priority
+#     serviceAccountName: spark
+#     templates:
+#       - name: submit-spark-job-1
+#         resource:
+#           action: create
+#           manifest: |
+#             apiVersion: sparkoperator.k8s.io/v1beta2
+#             kind: SparkApplication
+#             metadata:
+#               generateName: user-cdc-event-proc-
+#               namespace: au05-sales-test
+#             spec:
+#               type: Scala
+#               mode: cluster
+#               image: "eragani/spark:3.3.1"
+#               mainClass: "step1.UserCDCEventProcessor"
+#               mainApplicationFile: "local:///opt/suite/audience2.0/Audience-assembly-0.1.0.jar"
+#               sparkVersion: "3.3.1"
+#               restartPolicy:
+#                 type: Never
+#               driver:
+#                 cores: 1
+#                 coreLimit: "1"
+#                 memory: "512m"
+#                 memoryOverhead: "512m"
+#                 labels:
+#                   version: 3.3.1
+#                 serviceAccount: spark
+#               executor:
+#                 cores: 1
+#                 instances: 1
+#                 memory: "512m"
+#                 memoryOverhead: "512m"
+#                 labels:
+#                   version: 3.3.1
+#               sparkConf:
+#                 "spark.kubernetes.namespace": "au05-sales-test"
+#                 "spark.kubernetes.authenticate.driver.serviceAccountName": "spark"
+#                 "spark.kubernetes.container.image": "eragani/spark:3.3.1"
+#                 "spark.eventLog.enabled": "false"
+#                 "spark.kubernetes.container.image.pullSecrets": "docker-secret"
+#               arguments:
+#                 - "au03_sales_test"
+# ---
+# apiVersion: argoproj.io/v1alpha1
+# kind: CronWorkflow
+# metadata:
+#   name: user-cdc-event-proc-2
+#   namespace: au05-sales-test
+# spec:
+#   schedule: "*/4 * * * *"
+#   concurrencyPolicy: Forbid
+#   startingDeadlineSeconds: 0
+#   workflowSpec:
+#     entrypoint: submit-spark-job-2
+#     synchronization:  # Defining the synchronization policy here
+#       mutex:
+#         name: my-mutex
+#     priorityClassName: low-priority
+#     serviceAccountName: spark
+#     templates:
+#       - name: submit-spark-job-2
+#         resource:
+#           action: create
+#           manifest: |
+#             apiVersion: sparkoperator.k8s.io/v1beta2
+#             kind: SparkApplication
+#             metadata:
+#               generateName: user-cdc-event-proc-
+#               namespace: au05-sales-test
+#             spec:
+#               type: Scala
+#               mode: cluster
+#               image: "eragani/spark:3.3.1"
+#               mainClass: "step1.UserCDCEventProcessor"
+#               mainApplicationFile: "local:///opt/suite/audience2.0/Audience-assembly-0.1.0.jar"
+#               sparkVersion: "3.3.1"
+#               restartPolicy:
+#                 type: Never
+#               driver:
+#                 cores: 1
+#                 coreLimit: "1"
+#                 memory: "512m"
+#                 memoryOverhead: "512m"
+#                 labels:
+#                   version: 3.3.1
+#                 serviceAccount: spark
+#               executor:
+#                 cores: 1
+#                 instances: 1
+#                 memory: "512m"
+#                 memoryOverhead: "512m"
+#                 labels:
+#                   version: 3.3.1
+#               sparkConf:
+#                 "spark.kubernetes.namespace": "au05-sales-test"
+#                 "spark.kubernetes.authenticate.driver.serviceAccountName": "spark"
+#                 "spark.kubernetes.container.image": "eragani/spark:3.3.1"
+#                 "spark.eventLog.enabled": "false"
+#                 "spark.kubernetes.container.image.pullSecrets": "docker-secret"
+#               arguments:
+#                 - "au03_sales_test"
+---
 apiVersion: argoproj.io/v1alpha1
 kind: CronWorkflow
 metadata:
@@ -150,7 +268,7 @@ spec:
   startingDeadlineSeconds: 0
   workflowSpec:
     entrypoint: submit-spark-job-1
-    synchronization:  # Defining the synchronization policy here
+    synchronization:
       mutex:
         name: my-mutex
     priorityClassName: high-priority
@@ -197,6 +315,13 @@ spec:
                 "spark.kubernetes.container.image.pullSecrets": "docker-secret"
               arguments:
                 - "au03_sales_test"
+ 
+      - name: wait-for-spark-job-1
+        dependencies: [submit-spark-job-1]
+        container:
+          image: busybox:latest
+          command: ["sh", "-c", "while [ $(kubectl get sparkapplications.sparkoperator.k8s.io -n au05-sales-test | grep user-cdc-event-proc- | wc -l) -gt 0 ]; do sleep 10; done"]
+ 
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: CronWorkflow
@@ -209,7 +334,7 @@ spec:
   startingDeadlineSeconds: 0
   workflowSpec:
     entrypoint: submit-spark-job-2
-    synchronization:  # Defining the synchronization policy here
+    synchronization:
       mutex:
         name: my-mutex
     priorityClassName: low-priority
@@ -256,4 +381,9 @@ spec:
                 "spark.kubernetes.container.image.pullSecrets": "docker-secret"
               arguments:
                 - "au03_sales_test"
-
+ 
+      - name: wait-for-spark-job-2
+        dependencies: [submit-spark-job-2]
+        container:
+          image: busybox:latest
+          command: ["sh", "-c", "while [ $(kubectl get sparkapplications.sparkoperator.k8s.io -n au05-sales-test | grep user-cdc-event-proc- | wc -l) -gt 0 ]; do sleep 10; done"]
