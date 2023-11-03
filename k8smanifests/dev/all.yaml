@@ -472,13 +472,12 @@ spec:
           workingDir: "/tmp"  # Set a writable working directory
           command: [sh]
           source: |
-            APP_NAME="{{inputs.parameters.spark-application-name}}"
-            echo "Checking status of SparkApplication: $APP_NAME"
             while true; do
-              STATE=$(kubectl get sparkapplications "$APP_NAME" -n au05-sales-test -o jsonpath='{.status.applicationState.state}')
+              STATE=$(kubectl get sparkapplications -n au05-sales-test -l version=3.3.1 -o jsonpath='{.items[?(@.metadata.generateName=="${SPARK_APPLICATION_NAME}")].status.applicationState.state}')
               echo "Current State: $STATE"
               if [ "$STATE" = "COMPLETED" ]; then
                 echo "SparkApplication completed."
+                sleep 5  # Give it a moment before exiting
                 exit 0
               elif [ "$STATE" = "FAILED" ]; then
                 echo "SparkApplication failed."
@@ -573,13 +572,12 @@ spec:
           workingDir: "/tmp"  # Set a writable working directory
           command: [sh]
           source: |
-            APP_NAME="{{inputs.parameters.spark-application-name}}"
-            echo "Checking status of SparkApplication: $APP_NAME"
             while true; do
-              STATE=$(kubectl get sparkapplications "$APP_NAME" -n au05-sales-test -o jsonpath='{.status.applicationState.state}')
+              STATE=$(kubectl get sparkapplications -n au05-sales-test -l version=3.3.1 -o jsonpath='{.items[?(@.metadata.generateName=="${SPARK_APPLICATION_NAME}")].status.applicationState.state}')
               echo "Current State: $STATE"
               if [ "$STATE" = "COMPLETED" ]; then
                 echo "SparkApplication completed."
+                sleep 5  # Give it a moment before exiting
                 exit 0
               elif [ "$STATE" = "FAILED" ]; then
                 echo "SparkApplication failed."
