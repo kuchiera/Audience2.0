@@ -491,6 +491,7 @@ spec:
             # When the loop exits, we assume the job is done, so we sleep briefly before exiting the script
             sleep 5
             echo "Exiting the shell now."
+            exit 0
           securityContext:
             runAsUser: 0
 ---
@@ -597,5 +598,6 @@ spec:
             # When the loop exits, we assume the job is done, so we sleep briefly before exiting the script
             sleep 5
             echo "Exiting the shell now."
+            exit 0
           securityContext:
             runAsUser: 0
