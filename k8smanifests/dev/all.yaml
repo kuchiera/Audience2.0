@@ -473,21 +473,24 @@ spec:
           command: [sh]
           source: |
             APP_NAME="{{inputs.parameters.spark-application-name}}"
+            RUNNING="true"
             echo "Checking status of SparkApplication: $APP_NAME"
-            while true; do
+            while [ "$RUNNING" = "true" ]; do
               STATE=$(kubectl get sparkapplications "$APP_NAME" -n au05-sales-test -o jsonpath='{.status.applicationState.state}')
               echo "Current State: $STATE"
               if [ "$STATE" = "COMPLETED" ]; then
                 echo "SparkApplication completed."
-                sleep 5  # Give it a moment before exiting
-                exit 0
+                RUNNING="false"
               elif [ "$STATE" = "FAILED" ]; then
                 echo "SparkApplication failed."
-                sleep 5  # Give it a moment before exiting
-                exit 1
+                RUNNING="false"
+              else
+                sleep 10  # Wait before checking the status again
               fi
-              sleep 10
             done
+            # When the loop exits, we assume the job is done, so we sleep briefly before exiting the script
+            sleep 5
+            exit 0
           securityContext:
             runAsUser: 0
 ---
@@ -576,20 +579,23 @@ spec:
           command: [sh]
           source: |
             APP_NAME="{{inputs.parameters.spark-application-name}}"
+            RUNNING="true"
             echo "Checking status of SparkApplication: $APP_NAME"
-            while true; do
+            while [ "$RUNNING" = "true" ]; do
               STATE=$(kubectl get sparkapplications "$APP_NAME" -n au05-sales-test -o jsonpath='{.status.applicationState.state}')
               echo "Current State: $STATE"
               if [ "$STATE" = "COMPLETED" ]; then
                 echo "SparkApplication completed."
-                sleep 5  # Give it a moment before exiting
-                exit 0
+                RUNNING="false"
               elif [ "$STATE" = "FAILED" ]; then
                 echo "SparkApplication failed."
-                sleep 5  # Give it a moment before exiting
-                exit 1
+                RUNNING="false"
+              else
+                sleep 10  # Wait before checking the status again
               fi
-              sleep 10
             done
+            # When the loop exits, we assume the job is done, so we sleep briefly before exiting the script
+            sleep 5
+            exit 0
           securityContext:
             runAsUser: 0
