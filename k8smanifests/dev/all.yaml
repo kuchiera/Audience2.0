@@ -471,12 +471,15 @@ spec:
           image: busybox:latest #alpine/k8s:1.18.2
           command: [sh]
           source: |
+            APP_NAME="{{inputs.parameters.spark-application-name}}"
+            echo "Checking status of SparkApplication: $APP_NAME"
             while true; do
-              STATE=$(kubectl get sparkapplications "{{inputs.parameters.spark-application-name}}" -n au05-sales-test -o jsonpath='{.status.applicationState.state}')
-              if [ "$STATE" == "COMPLETED" ]; then
+              STATE=$(kubectl get sparkapplications "$APP_NAME" -n au05-sales-test -o jsonpath='{.status.applicationState.state}')
+              echo "Current State: $STATE"
+              if [ "$STATE" = "COMPLETED" ]; then
                 echo "SparkApplication completed."
                 exit 0
-              elif [ "$STATE" == "FAILED" ]; then
+              elif [ "$STATE" = "FAILED" ]; then
                 echo "SparkApplication failed."
                 exit 1
               fi
@@ -566,12 +569,15 @@ spec:
           image: busybox:latest #bitnami/kubectl:latest
           command: [sh]
           source: |
+            APP_NAME="{{inputs.parameters.spark-application-name}}"
+            echo "Checking status of SparkApplication: $APP_NAME"
             while true; do
-              STATE=$(kubectl get sparkapplications "{{inputs.parameters.spark-application-name}}" -n au05-sales-test -o jsonpath='{.status.applicationState.state}')
-              if [ "$STATE" == "COMPLETED" ]; then
+              STATE=$(kubectl get sparkapplications "$APP_NAME" -n au05-sales-test -o jsonpath='{.status.applicationState.state}')
+              echo "Current State: $STATE"
+              if [ "$STATE" = "COMPLETED" ]; then
                 echo "SparkApplication completed."
                 exit 0
-              elif [ "$STATE" == "FAILED" ]; then
+              elif [ "$STATE" = "FAILED" ]; then
                 echo "SparkApplication failed."
                 exit 1
               fi
