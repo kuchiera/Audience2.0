@@ -257,6 +257,137 @@ roleRef:
 #               arguments:
 #                 - "au03_sales_test"
 ---
+# apiVersion: argoproj.io/v1alpha1
+# kind: CronWorkflow
+# metadata:
+#   name: user-cdc-event-proc-1
+#   namespace: au05-sales-test
+# spec:
+#   schedule: "*/2 * * * *"
+#   concurrencyPolicy: Forbid
+#   startingDeadlineSeconds: 0
+#   workflowSpec:
+#     entrypoint: submit-spark-job-1
+#     synchronization:
+#       mutex:
+#         name: my-mutex
+#     priorityClassName: high-priority
+#     serviceAccountName: spark
+#     templates:
+#       - name: submit-spark-job-1
+#         resource:
+#           action: create
+#           manifest: |
+#             apiVersion: sparkoperator.k8s.io/v1beta2
+#             kind: SparkApplication
+#             metadata:
+#               generateName: user-cdc-event-proc-
+#               namespace: au05-sales-test
+#             spec:
+#               type: Scala
+#               mode: cluster
+#               image: "eragani/spark:3.3.1"
+#               mainClass: "step1.UserCDCEventProcessor"
+#               mainApplicationFile: "local:///opt/suite/audience2.0/Audience-assembly-0.1.0.jar"
+#               sparkVersion: "3.3.1"
+#               restartPolicy:
+#                 type: Never
+#               driver:
+#                 cores: 1
+#                 coreLimit: "1"
+#                 memory: "512m"
+#                 memoryOverhead: "512m"
+#                 labels:
+#                   version: 3.3.1
+#                 serviceAccount: spark
+#               executor:
+#                 cores: 1
+#                 instances: 1
+#                 memory: "512m"
+#                 memoryOverhead: "512m"
+#                 labels:
+#                   version: 3.3.1
+#               sparkConf:
+#                 "spark.kubernetes.namespace": "au05-sales-test"
+#                 "spark.kubernetes.authenticate.driver.serviceAccountName": "spark"
+#                 "spark.kubernetes.container.image": "eragani/spark:3.3.1"
+#                 "spark.eventLog.enabled": "false"
+#                 "spark.kubernetes.container.image.pullSecrets": "docker-secret"
+#               arguments:
+#                 - "au03_sales_test"
+ 
+#       - name: wait-for-spark-job-1
+#         dependencies: [submit-spark-job-1]
+#         container:
+#           image: busybox:latest
+#           command: ["sh", "-c", "while [ $(kubectl get sparkapplications.sparkoperator.k8s.io -n au05-sales-test | grep user-cdc-event-proc- | wc -l) -gt 0 ]; do sleep 10; done"]
+ 
+---
+# apiVersion: argoproj.io/v1alpha1
+# kind: CronWorkflow
+# metadata:
+#   name: user-cdc-event-proc-2
+#   namespace: au05-sales-test
+# spec:
+#   schedule: "*/4 * * * *"
+#   concurrencyPolicy: Forbid
+#   startingDeadlineSeconds: 0
+#   workflowSpec:
+#     entrypoint: submit-spark-job-2
+#     synchronization:
+#       mutex:
+#         name: my-mutex
+#     priorityClassName: low-priority
+#     serviceAccountName: spark
+#     templates:
+#       - name: submit-spark-job-2
+#         resource:
+#           action: create
+#           manifest: |
+#             apiVersion: sparkoperator.k8s.io/v1beta2
+#             kind: SparkApplication
+#             metadata:
+#               generateName: user-cdc-event-proc-
+#               namespace: au05-sales-test
+#             spec:
+#               type: Scala
+#               mode: cluster
+#               image: "eragani/spark:3.3.1"
+#               mainClass: "step1.UserCDCEventProcessor"
+#               mainApplicationFile: "local:///opt/suite/audience2.0/Audience-assembly-0.1.0.jar"
+#               sparkVersion: "3.3.1"
+#               restartPolicy:
+#                 type: Never
+#               driver:
+#                 cores: 1
+#                 coreLimit: "1"
+#                 memory: "512m"
+#                 memoryOverhead: "512m"
+#                 labels:
+#                   version: 3.3.1
+#                 serviceAccount: spark
+#               executor:
+#                 cores: 1
+#                 instances: 1
+#                 memory: "512m"
+#                 memoryOverhead: "512m"
+#                 labels:
+#                   version: 3.3.1
+#               sparkConf:
+#                 "spark.kubernetes.namespace": "au05-sales-test"
+#                 "spark.kubernetes.authenticate.driver.serviceAccountName": "spark"
+#                 "spark.kubernetes.container.image": "eragani/spark:3.3.1"
+#                 "spark.eventLog.enabled": "false"
+#                 "spark.kubernetes.container.image.pullSecrets": "docker-secret"
+#               arguments:
+#                 - "au03_sales_test"
+ 
+#       - name: wait-for-spark-job-2
+#         dependencies: [submit-spark-job-2]
+#         container:
+#           image: busybox:latest
+#           command: ["sh", "-c", "while [ $(kubectl get sparkapplications.sparkoperator.k8s.io -n au05-sales-test | grep user-cdc-event-proc- | wc -l) -gt 0 ]; do sleep 10; done"]
+---
 apiVersion: argoproj.io/v1alpha1
 kind: CronWorkflow
 metadata:
@@ -267,16 +398,29 @@ spec:
   concurrencyPolicy: Forbid
   startingDeadlineSeconds: 0
   workflowSpec:
-    entrypoint: submit-spark-job-1
+    entrypoint: submit-and-wait-spark-job
     synchronization:
       mutex:
         name: my-mutex
     priorityClassName: high-priority
     serviceAccountName: spark
     templates:
+      - name: submit-and-wait-spark-job
+        steps:
+          - - name: submit-spark-job
+              template: submit-spark-job-1
+          - - name: wait-for-spark-job
+              template: wait-for-spark-job-1
+              arguments:
+                parameters:
+                  - name: spark-application-name
+                    value: "{{steps.submit-spark-job.outputs.parameters.spark-application-name}}"
+
       - name: submit-spark-job-1
         resource:
           action: create
+          successCondition: status.applicationState.state == "COMPLETED"
+          failureCondition: status.applicationState.state == "FAILED"
           manifest: |
             apiVersion: sparkoperator.k8s.io/v1beta2
             kind: SparkApplication
@@ -315,13 +459,31 @@ spec:
                 "spark.kubernetes.container.image.pullSecrets": "docker-secret"
               arguments:
                 - "au03_sales_test"
- 
+        outputs:
+          parameters:
+            - name: spark-application-name
+              valueFrom:
+                jsonPath: '{.metadata.name}'
+
       - name: wait-for-spark-job-1
-        dependencies: [submit-spark-job-1]
-        container:
-          image: busybox:latest
-          command: ["sh", "-c", "while [ $(kubectl get sparkapplications.sparkoperator.k8s.io -n au05-sales-test | grep user-cdc-event-proc- | wc -l) -gt 0 ]; do sleep 10; done"]
- 
+        inputs:
+          parameters:
+            - name: spark-application-name
+        script:
+          image: busybox:latest #alpine/k8s:1.18.2
+          command: [sh]
+          source: |
+            while true; do
+              STATE=$(kubectl get sparkapplications "{{inputs.parameters.spark-application-name}}" -n au05-sales-test -o jsonpath='{.status.applicationState.state}')
+              if [ "$STATE" == "COMPLETED" ]; then
+                echo "SparkApplication completed."
+                exit 0
+              elif [ "$STATE" == "FAILED" ]; then
+                echo "SparkApplication failed."
+                exit 1
+              fi
+              sleep 10
+            done
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: CronWorkflow
@@ -333,16 +495,29 @@ spec:
   concurrencyPolicy: Forbid
   startingDeadlineSeconds: 0
   workflowSpec:
-    entrypoint: submit-spark-job-2
+    entrypoint: submit-and-wait-spark-job-2
     synchronization:
       mutex:
         name: my-mutex
     priorityClassName: low-priority
     serviceAccountName: spark
     templates:
+      - name: submit-and-wait-spark-job-2
+        steps:
+          - - name: submit-spark-job
+              template: submit-spark-job-2
+          - - name: wait-for-spark-job
+              template: wait-for-spark-job-2
+              arguments:
+                parameters:
+                  - name: spark-application-name
+                    value: "{{steps.submit-spark-job.outputs.parameters.spark-application-name}}"
+
       - name: submit-spark-job-2
         resource:
           action: create
+          successCondition: status.applicationState.state == "COMPLETED"
+          failureCondition: status.applicationState.state == "FAILED"
           manifest: |
             apiVersion: sparkoperator.k8s.io/v1beta2
             kind: SparkApplication
@@ -381,9 +556,28 @@ spec:
                 "spark.kubernetes.container.image.pullSecrets": "docker-secret"
               arguments:
                 - "au03_sales_test"
- 
+        outputs:
+          parameters:
+            - name: spark-application-name
+              valueFrom:
+                jsonPath: '{.metadata.name}'
+
       - name: wait-for-spark-job-2
-        dependencies: [submit-spark-job-2]
-        container:
-          image: busybox:latest
-          command: ["sh", "-c", "while [ $(kubectl get sparkapplications.sparkoperator.k8s.io -n au05-sales-test | grep user-cdc-event-proc- | wc -l) -gt 0 ]; do sleep 10; done"]
+        inputs:
+          parameters:
+            - name: spark-application-name
+        script:
+          image: busybox:latest #bitnami/kubectl:latest
+          command: [sh]
+          source: |
+            while true; do
+              STATE=$(kubectl get sparkapplications "{{inputs.parameters.spark-application-name}}" -n au05-sales-test -o jsonpath='{.status.applicationState.state}')
+              if [ "$STATE" == "COMPLETED" ]; then
+                echo "SparkApplication completed."
+                exit 0
+              elif [ "$STATE" == "FAILED" ]; then
+                echo "SparkApplication failed."
+                exit 1
+              fi
+              sleep 10
+            done
