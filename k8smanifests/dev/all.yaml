@@ -468,7 +468,7 @@ spec:
           parameters:
             - name: spark-application-name
         script:
-          image: busybox:latest #alpine/k8s:1.18.2
+          image: bitnami/kubectl:latest
           command: [sh]
           source: |
             APP_NAME="{{inputs.parameters.spark-application-name}}"
@@ -566,7 +566,7 @@ spec:
           parameters:
             - name: spark-application-name
         script:
-          image: busybox:latest #bitnami/kubectl:latest
+          image: bitnami/kubectl:latest
           command: [sh]
           source: |
             APP_NAME="{{inputs.parameters.spark-application-name}}"
