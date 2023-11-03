@@ -419,8 +419,6 @@ spec:
       - name: submit-spark-job-1
         resource:
           action: create
-          successCondition: status.applicationState.state == "COMPLETED"
-          failureCondition: status.applicationState.state == "FAILED"
           manifest: |
             apiVersion: sparkoperator.k8s.io/v1beta2
             kind: SparkApplication
@@ -516,8 +514,6 @@ spec:
       - name: submit-spark-job-2
         resource:
           action: create
-          successCondition: status.applicationState.state == "COMPLETED"
-          failureCondition: status.applicationState.state == "FAILED"
           manifest: |
             apiVersion: sparkoperator.k8s.io/v1beta2
             kind: SparkApplication
