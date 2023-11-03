@@ -46,7 +46,6 @@ subjects:
 - kind: ServiceAccount
   name: spark
   namespace: au05-sales-test
-
 roleRef:
   kind: Role
   name: spark-role
