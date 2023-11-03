@@ -469,6 +469,7 @@ spec:
             - name: spark-application-name
         script:
           image: bitnami/kubectl:latest
+          workingDir: "/tmp"  # Set a writable working directory
           command: [sh]
           source: |
             APP_NAME="{{inputs.parameters.spark-application-name}}"
@@ -567,6 +568,7 @@ spec:
             - name: spark-application-name
         script:
           image: bitnami/kubectl:latest
+          workingDir: "/tmp"  # Set a writable working directory
           command: [sh]
           source: |
             APP_NAME="{{inputs.parameters.spark-application-name}}"
