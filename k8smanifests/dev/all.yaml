@@ -148,18 +148,16 @@ metadata:
 spec:
   schedule: "*/2 * * * *"
   concurrencyPolicy: Forbid
-  synchronization:
-    semaphore:
-      configMapKeyRef:
-        name: spark-conf
-        key: workflow
   startingDeadlineSeconds: 0
   workflowSpec:
-    entrypoint: submit-spark-job
+    entrypoint: submit-spark-job-1
+    synchronization:  # Defining the synchronization policy here
+      mutex:
+        name: my-mutex
     priorityClassName: high-priority
     serviceAccountName: spark
     templates:
-      - name: submit-spark-job
+      - name: submit-spark-job-1
         resource:
           action: create
           manifest: |
@@ -209,18 +207,16 @@ metadata:
 spec:
   schedule: "*/4 * * * *"
   concurrencyPolicy: Forbid
-  synchronization:
-    semaphore:
-      configMapKeyRef:
-        name: spark-conf
-        key: workflow
   startingDeadlineSeconds: 0
   workflowSpec:
-    entrypoint: submit-spark-job
+    entrypoint: submit-spark-job-2
+    synchronization:  # Defining the synchronization policy here
+      mutex:
+        name: my-mutex
     priorityClassName: low-priority
     serviceAccountName: spark
     templates:
-      - name: submit-spark-job
+      - name: submit-spark-job-2
         resource:
           action: create
           manifest: |
