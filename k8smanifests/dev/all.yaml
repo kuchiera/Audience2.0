@@ -486,6 +486,8 @@ spec:
               fi
               sleep 10
             done
+          securityContext:
+            runAsUser: 0
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: CronWorkflow
@@ -585,3 +587,5 @@ spec:
               fi
               sleep 10
             done
+          securityContext:
+            runAsUser: 0
