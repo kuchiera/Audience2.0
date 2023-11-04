@@ -492,8 +492,8 @@ spec:
             sleep 5
             echo "Exiting the shell now."
             exit 0
-          securityContext:
-            runAsUser: 0
+          # securityContext:
+          #  runAsUser: 0
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: CronWorkflow
@@ -599,5 +599,5 @@ spec:
             sleep 5
             echo "Exiting the shell now."
             exit 0
-          securityContext:
-            runAsUser: 0
+          # securityContext:
+          #  runAsUser: 0
