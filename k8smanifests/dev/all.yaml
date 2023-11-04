@@ -468,7 +468,7 @@ spec:
           parameters:
             - name: spark-application-name
         script:
-          image: d3fk/kubectl:latest  #bitnami/kubectl:latest
+          image: portainer/kubectl-shell:latest  #bitnami/kubectl:latest
           # workingDir: "/tmp"  # Set a writable working directory
           command: [sh]
           source: |
@@ -575,7 +575,7 @@ spec:
           parameters:
             - name: spark-application-name
         script:
-          image: d3fk/kubectl:latest  #bitnami/kubectl:latest
+          image: portainer/kubectl-shell:latest  #bitnami/kubectl:latest
           # workingDir: "/tmp"  # Set a writable working directory
           command: [sh]
           source: |
