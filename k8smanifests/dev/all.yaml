@@ -492,6 +492,8 @@ spec:
             sleep 5
             echo "Exiting the shell now."
             exit 0
+            CONTAINER_EXIT_CODE=$(kubectl get pod <driver-pod-name> -n au05-sales-test -o jsonpath='{.status.containerStatuses[0].exitCode}')
+            echo "Container Exit Code: $CONTAINER_EXIT_CODE"
           securityContext:
             runAsUser: 0
 ---
@@ -599,5 +601,7 @@ spec:
             sleep 5
             echo "Exiting the shell now."
             exit 0
+            CONTAINER_EXIT_CODE=$(kubectl get pod <driver-pod-name> -n au05-sales-test -o jsonpath='{.status.containerStatuses[0].exitCode}')
+            echo "Container Exit Code: $CONTAINER_EXIT_CODE"
           securityContext:
             runAsUser: 0
