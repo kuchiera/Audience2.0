@@ -491,6 +491,7 @@ spec:
             # When the loop exits, we assume the job is done, so we sleep briefly before exiting the script
             sleep 5
             echo "Exiting the shell now."
+            pkill -f 'spark.Driver'
             exit 0
             CONTAINER_EXIT_CODE=$(kubectl get pod <driver-pod-name> -n au05-sales-test -o jsonpath='{.status.containerStatuses[0].exitCode}')
             echo "Container Exit Code: $CONTAINER_EXIT_CODE"
@@ -600,6 +601,7 @@ spec:
             # When the loop exits, we assume the job is done, so we sleep briefly before exiting the script
             sleep 5
             echo "Exiting the shell now."
+            pkill -f 'spark.Driver'
             exit 0
             CONTAINER_EXIT_CODE=$(kubectl get pod <driver-pod-name> -n au05-sales-test -o jsonpath='{.status.containerStatuses[0].exitCode}')
             echo "Container Exit Code: $CONTAINER_EXIT_CODE"
