@@ -477,12 +477,12 @@ spec:
               if [ "$STATUS" == "COMPLETED" ]; then
                 echo "Spark job completed"
                 echo $HOSTNAME "is being deleted"
-                kubectl delete pod $HOSTNAME -n au05-sales-test
+                kubectl delete pod $HOSTNAME --grace-period=0 --force -n au05-sales-test
                 exit 0
               elif [ "$STATUS" == "FAILED" ]; then
                 echo "Spark job failed"
                 echo $HOSTNAME "is being deleted"
-                kubectl delete pod $HOSTNAME -n au05-sales-test
+                kubectl delete pod $HOSTNAME --grace-period=0 --force -n au05-sales-test
                 exit 1
               fi
               echo "Waiting for Spark job to complete..."
@@ -580,12 +580,12 @@ spec:
               if [ "$STATUS" == "COMPLETED" ]; then
                 echo "Spark job completed"
                 echo $HOSTNAME "is being deleted"
-                kubectl delete pod $HOSTNAME -n au05-sales-test
+                kubectl delete pod $HOSTNAME --grace-period=0 --force -n au05-sales-test
                 exit 0
               elif [ "$STATUS" == "FAILED" ]; then
                 echo "Spark job failed"
                 echo $HOSTNAME "is being deleted"
-                kubectl delete pod $HOSTNAME -n au05-sales-test
+                kubectl delete pod $HOSTNAME --grace-period=0 --force -n au05-sales-test
                 exit 1
               fi
               echo "Waiting for Spark job to complete..."
