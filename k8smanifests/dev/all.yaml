@@ -476,11 +476,11 @@ spec:
               STATUS=$(kubectl get sparkapplication {{inputs.parameters.spark-application-name}} -o jsonpath='{.status.applicationState.state}')
               if [ "$STATUS" == "COMPLETED" ]; then
                 echo "Spark job completed"
-                kubectl delete pod ${POD_NAME} --grace-period=0 --force -n ${NAMESPACE}
+                kubectl delete pod ${POD_NAME} --grace-period=0 --force -n au05-sales-test
                 exit 0
               elif [ "$STATUS" == "FAILED" ]; then
                 echo "Spark job failed"
-                kubectl delete pod ${POD_NAME} --grace-period=0 --force -n ${NAMESPACE}
+                kubectl delete pod ${POD_NAME} --grace-period=0 --force -n au05-sales-test
                 exit 1
               fi
               echo "Waiting for Spark job to complete..."
@@ -577,11 +577,11 @@ spec:
               STATUS=$(kubectl get sparkapplication {{inputs.parameters.spark-application-name}} -o jsonpath='{.status.applicationState.state}')
               if [ "$STATUS" == "COMPLETED" ]; then
                 echo "Spark job completed"
-                kubectl delete pod ${POD_NAME} --grace-period=0 --force -n ${NAMESPACE}
+                kubectl delete pod ${POD_NAME} --grace-period=0 --force -n au05-sales-test
                 exit 0
               elif [ "$STATUS" == "FAILED" ]; then
                 echo "Spark job failed"
-                kubectl delete pod ${POD_NAME} --grace-period=0 --force -n ${NAMESPACE}
+                kubectl delete pod ${POD_NAME} --grace-period=0 --force -n au05-sales-test
                 exit 1
               fi
               echo "Waiting for Spark job to complete..."
