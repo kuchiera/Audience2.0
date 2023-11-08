@@ -456,7 +456,7 @@ spec:
                 "spark.eventLog.enabled": "false"
                 "spark.kubernetes.container.image.pullSecrets": "docker-secret"
               arguments:
-                - "au03_sales_test"
+                #- "au03_sales_test"
         outputs:
           parameters:
             - name: spark-application-name
@@ -559,7 +559,7 @@ spec:
                 "spark.eventLog.enabled": "false"
                 "spark.kubernetes.container.image.pullSecrets": "docker-secret"
               arguments:
-                - "au03_sales_test"
+                #- "au03_sales_test"
         outputs:
           parameters:
             - name: spark-application-name
